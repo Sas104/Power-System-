@@ -1,7 +1,8 @@
 %Power system I sessional, EEE 3112, RUET
 %Written by Sabbir Ahmed Sumon, RUET EEE-18
+%On 23 OCtober 2022
 %Course Teacher Md. Rashidul Islam, 
-%Assistant Professor, RUET, Bangladesh
+%Assistant Professor,EEE, RUET, Bangladesh
 clc;
 clear all;
 warning off;
