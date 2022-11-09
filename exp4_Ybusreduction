@@ -1,0 +1,57 @@
+%Y bus reduction of power system
+%Power system I sessional, EEE 3112, RUET
+%Written by Sabbir Ahmed Sumon, RUET EEE-18
+%On 29 October 2022
+%Course Teacher Md. Rashidul Islam, 
+%Assistant Professor,EEE, RUET, Bangladesh
+clc;
+clear all;
+warning off;
+cd('C:\Users\Asus\OneDrive\Desktop\reports_lab\PowerSystemISessional');
+A=readtable('reduction_1.xlsx');%open excel file as table
+A=table2array(A);%convert table into array
+size=size(A);
+for i=1:size(1) %Generate impedance matrix
+    z(A(i,1),A(i,2))=A(i,3)+A(i,4)*j;
+    z(A(i,2),A(i,1))=A(i,3)+A(i,4)*j;
+end
+% disp (z)
+for i=1:length(z) %set the unassigned impedances to infinite
+    for j=1:1:length(z)
+        if z(i,j)==0
+            z(i,j)=inf;
+        end
+    end
+end
+y=1./z; %Generate admittance matrix
+for i=1:length(z) %generate Y-BUS Matrix
+    for j=1:1:length(z)
+        if i==j
+            Y(i,j)=sum(y(i,:));
+        else
+            Y(i,j)=-y(i,j);
+        end
+    end
+end
+fprintf('Y BUS Matrix is\n')  %print 
+disp(Y);
+% T = array2table(Y)
+% writetable(T, 'Ybus.xls');
+%***********starting reduction here************
+%*******************1801104****************
+n=length(z);
+r=input('Enter Number of reduction\n');
+Ys=Y;  %To preserve the Y bus matrix take dummy matix Ys
+for k=1:r
+    for i=1:n
+        for j=1:n
+            Yr(i,j)=Ys(i,j)-((Ys(i,n)*Ys(n,j))/Ys(n,n));
+        end
+    end
+    Yr(n,:)=[];
+    Yr(:,n)=[];
+    Ys=Yr;
+    n=n-1;
+    fprintf('After reducing %u times\n',k);
+    disp(Yr);
+end
