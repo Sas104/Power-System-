@@ -8,7 +8,7 @@
 clc;
 clear all;
 warning off;
-cd('C:\Users\Asus\OneDrive\Desktop\reports_lab\PowerSystemISessional');% change current directory
+cd('C:\Users\Asus\OneDrive\Desktop\reports_lab\PowerSystemISessional');
 A=readtable('gauss.xlsx');%open excel file as table
 A=table2array(A);%convert table into array
 sz=size(A);
@@ -46,51 +46,46 @@ for i=1:a(1)
     Pl(B(i,1))=B(i,5);
     Ql(B(i,1))=B(i,6);
 end
-%e=input('Enter accuracy\n'); 
-e=0.00000001;
-r=10;
+%e=input('Enter tolerance\n'); 
+e=0.00000001; %tolerance
+r=100;   %maximum number of iteration
 for i=1:a(1)
     if Pg(i)>0
         Vconstant(i)=V(i);
-        Pgconstant(i)=Pg(i);
     end
 end
 for j=1:r
     for i=2:a(1)
-        Vprev(i)=V(i);
-        if Pg(i)>0
+        Vprev(i)=V(i); %preserving the previous results
+        if Pg(i)>0  %for generation bus
             I=0;
-            for k=1:a(1)
+            for k=1:a(1) %calculating I with generalized equation
                 I=I+(Y(i,k)*V(k));
             end
             I(i)=I;
-            S(i)=V(i)*conj(I(i));
-            S(i)=S(i)+Pg(i)-Pl(i)-real(S(i));
-            VY=0;
-            for k=1:a(1)
-                VY=VY+(Y(i,k)*V(k));
-            end 
-            VY=VY-V(i)*Y(i,i);
-            V(i)=(1/Y(i,i))*(conj(S(i))/conj(V(i))-VY);
-            Vangle=angle(V(i));
-            Vr=Vconstant(i);
-            V(i)=complex(Vr*cos(Vangle),Vr*sin(Vangle));
-        else
+            S(i)=V(i)*conj(I(i)); %calculating SI
+            S(i)=S(i)+Pg(i)-Pl(i)-real(S(i)); %keeping real part of SI unchanged
+        else %for load bus
             S(i)=complex(Pg(i)-Pl(i),(Qg(i)-Ql(i)));
+        end
             VY=0;
-            for k=1:a(1)
+            for k=1:a(1)        %calculating sums of V*Y
                 VY=VY+(Y(i,k)*V(k));
             end 
-            VY=VY-V(i)*Y(i,i);
-            V(i)=(1/Y(i,i))*(conj(S(i))/conj(V(i))-VY);
-        end
+            VY=VY-V(i)*Y(i,i); %subtracting current V*Y from total
+            V(i)=(1/Y(i,i))*(conj(S(i))/conj(V(i))-VY); %calculating bus voltage
+            if Pg(i)>0  %to keep magnitude of geeration bus voltage constant 
+                Vangle=angle(V(i));
+                Vr=Vconstant(i);
+                V(i)=complex(Vr*cos(Vangle),Vr*sin(Vangle));
+            end
     end
-%     fprintf('%u iteration\n',j+1)
-%     disp(V)
-    for j=2:a(1)
-        terminate=0;
+%     fprintf('%u iteration\n',j+1); %uncomment to see all iterations.
+%     disp(V);
+    terminate=1;
+    for j=2:a(1) %tolerance termination condition
         if (Vprev(i)-V(i))<e
-            terminate=1*terminate
+            terminate=1*terminate;
         else
             terminate=0;
         end
@@ -99,8 +94,8 @@ for j=1:r
         break;
     end
 end
-Vpolar=abs(V);
-Vangle=angle(V)*180/pi;
-for i=1:a(1)
+Vpolar=abs(V); %calculating manitude
+Vangle=angle(V)*180/pi; %calculating Polar angle
+for i=1:a(1) %printing the results in polar form 
     fprintf('V%u=%f<%f\n',i,Vpolar(i),Vangle(i));
 end
