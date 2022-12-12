@@ -1,4 +1,4 @@
-%this code is example of load flow analysis
+%This code is example of load flow analysis
 %It determines bus voltage with gauss seidel method
 %Power system I sessional, EEE 3112, RUET
 %Written by Sabbir Ahmed Sumon, RUET EEE-18
