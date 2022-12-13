@@ -1,3 +1,10 @@
+%This code is example of load flow analysis
+%It determines bus voltage with Decoupled Newton Raphson method
+%Power system I sessional, EEE 3112, RUET
+%Written by Sabbir Ahmed Sumon, RUET EEE-18
+%On 07 November 2022
+%Course Teacher Md. Rashidul Islam, 
+%Assistant Professor,EEE, RUET, Bangladesh
 clc;
 clear all;
 warning off;
